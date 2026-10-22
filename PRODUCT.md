@@ -13,7 +13,7 @@ Static HTML/CSS/JS (escolha do usuário). Sem build. Formulário envia para um G
 Pessoas físicas comprando móvel novo e pronto, de linha (sofá, rack, guarda-roupa de catálogo). Móvel planejado, sob medida e usado ficam fora. Situação: compraram ou vão comprar e ficam sem previsão, sem rastreio e sem resposta da loja depois do pedido. A página fala só com compradores; lojas aparecem apenas como contexto de como o app funciona.
 
 ## Product Purpose
-Movex é uma ideia de app em fase muito inicial: nada foi construído nem validado. Liga quem quer comprar móvel a lojas de móveis, com pedido e acompanhamento da entrega pelo app. Objetivo da página: coletar contatos de interessados para validar a ideia, sem prometer algo que não existe.
+Movex é um app em fase inicial de desenvolvimento, ainda não validado. Na página, falar "fase inicial de desenvolvimento", nunca "nada foi construído". Liga quem quer comprar móvel a lojas de móveis, com pedido e acompanhamento da entrega pelo app. Objetivo da página: coletar contatos de interessados para validar a ideia, sem prometer algo que não existe.
 
 ## Positioning
 O Movex fica no acompanhamento: quem compra móvel passa a ver o pedido e a entrega no app, em vez de depender de resposta da loja. Quem vende e emite a nota é a loja; o Movex não compra nem revende móveis. Não se posiciona como "iFood de móveis" nem "Uber de móveis".
