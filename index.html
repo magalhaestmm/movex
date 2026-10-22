@@ -1,0 +1,592 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Movex | Saiba onde está o seu móvel</title>
+<meta name="description" content="O Movex é uma ideia de app que liga você às lojas de móveis e mostra o pedido e a entrega. Deixe seu contato para acompanhar.">
+<meta name="theme-color" content="#3B5B49">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500..800&family=Hanken+Grotesk:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --green-600: #3B5B49;
+  --green-700: #2F4A3B;
+  --green-800: #243A2E;
+  --on-green: #F3F7F4;
+  --on-green-soft: #CBDCD1;
+  --line-on-green: rgb(243 247 244 / .92);
+  --action: #F2C46D;
+  --action-hover: #F7D58E;
+  --on-action: #1C2A22;
+
+  --paper: #EAF1EC;
+  --paper-2: #DCE8E0;
+  --ink: #1C2A22;
+  --ink-soft: #3F5348;
+  --rule: #9DB5A5;
+  --field-border: #5F7D6B;
+  --focus-light: #2F4A3B;
+
+  --font-display: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --font-body: "Hanken Grotesk", "Segoe UI", system-ui, sans-serif;
+
+  --radius: 14px;
+  --gutter: clamp(1rem, 4vw, 2rem);
+  --ease: cubic-bezier(.22, 1, .36, 1);
+  color-scheme: light dark;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --paper: #17231D;
+    --paper-2: #1D2C24;
+    --ink: #E8F0EA;
+    --ink-soft: #AEC3B5;
+    --rule: #3E5A4A;
+    --field-border: #6F8F7B;
+    --focus-light: #F2C46D;
+  }
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font: 400 1.0625rem/1.6 var(--font-body);
+  -webkit-font-smoothing: antialiased;
+  accent-color: var(--green-600);
+  caret-color: var(--green-600);
+  scrollbar-color: var(--green-600) var(--paper-2);
+}
+::selection { background: var(--action); color: var(--on-action); }
+img, svg { display: block; max-width: 100%; }
+a { color: inherit; text-underline-offset: .22em; }
+:focus-visible { outline: 3px solid var(--focus-light); outline-offset: 3px; border-radius: 4px; }
+.on-green :focus-visible { outline-color: var(--action); }
+
+.wrap { width: min(100%, 1180px); margin-inline: auto; }
+.hero, section, footer { padding-inline: var(--gutter); }
+.skip { position: absolute; left: -999px; top: 8px; background: var(--action); color: var(--on-action); padding: .6rem 1rem; border-radius: 8px; z-index: 10; font-weight: 600; }
+.skip:focus { left: 8px; }
+
+h1, h2, h3 { font-family: var(--font-display); font-weight: 700; margin: 0; text-wrap: balance; letter-spacing: -.025em; line-height: 1.04; }
+h2 { font-size: clamp(2rem, 4.6vw, 3.4rem); }
+h3 { font-size: 1.35rem; letter-spacing: -.015em; line-height: 1.2; }
+p { margin: 0; }
+.lead { font-size: clamp(1.1rem, 1.7vw, 1.3rem); line-height: 1.5; max-width: 38ch; }
+
+/* ---------- Botão (única cor de ação) ---------- */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: .6rem;
+  min-height: 3.4rem; padding: .85rem 1.7rem;
+  border: 0; border-radius: 999px;
+  background: var(--action); color: var(--on-action);
+  font: 600 1.0625rem/1 var(--font-body); white-space: nowrap; text-decoration: none; cursor: pointer;
+  box-shadow: 0 6px 18px -6px rgb(10 25 16 / .5), inset 0 -2px 0 rgb(0 0 0 / .08);
+  transition: transform .25s var(--ease), background-color .2s, box-shadow .25s var(--ease);
+}
+.btn:hover { background: var(--action-hover); transform: translateY(-2px); box-shadow: 0 10px 22px -8px rgb(10 25 16 / .55), inset 0 -2px 0 rgb(0 0 0 / .08); }
+.btn:active { transform: translateY(0) scale(.98); }
+.btn[disabled] { opacity: .65; cursor: progress; transform: none; }
+.btn svg { width: 1.15rem; height: 1.15rem; }
+
+/* ---------- Marca ---------- */
+.brand { display: inline-flex; align-items: center; gap: .65rem; text-decoration: none; font: 700 1.4rem/1 var(--font-display); letter-spacing: -.02em; }
+.brand-mark { width: 2.5rem; height: 2.5rem; border-radius: 10px; background: var(--green-600); box-shadow: inset 0 0 0 1.5px rgb(243 247 244 / .5); display: grid; place-items: center; flex: none; }
+.brand-mark svg { width: 1.45rem; height: 1.45rem; }
+
+/* ---------- Hero ---------- */
+.hero {
+  background-color: var(--green-600);
+  background-image:
+    linear-gradient(rgb(255 255 255 / .09) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(255 255 255 / .09) 1px, transparent 1px),
+    linear-gradient(rgb(255 255 255 / .04) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(255 255 255 / .04) 1px, transparent 1px);
+  background-size: 120px 120px, 120px 120px, 24px 24px, 24px 24px;
+  color: var(--on-green);
+  min-height: 100dvh;
+  display: flex; flex-direction: column;
+}
+.nav { display: flex; align-items: center; justify-content: space-between; height: 72px; }
+.nav .btn { min-height: 2.8rem; padding: .6rem 1.25rem; font-size: 1rem; }
+.hero-body { flex: 1; display: grid; grid-template-columns: minmax(0, 6fr) minmax(0, 6fr); align-items: center; gap: clamp(1rem, 4vw, 4rem); padding-block: clamp(1.5rem, 4vh, 3rem) clamp(2rem, 6vh, 4rem); }
+.hero h1 { font-size: clamp(2.6rem, 6.2vw, 4.5rem); line-height: 1.02; letter-spacing: -.02em; margin-bottom: 1.5rem; }
+.hero .lead { color: var(--on-green-soft); margin-bottom: 2.25rem; }
+.plan { width: 100%; height: auto; max-height: 72vh; overflow: visible; }
+.plan text { font: 500 17px/1 var(--font-body); letter-spacing: .08em; text-transform: uppercase; fill: var(--on-green-soft); }
+.plan .wall { fill: none; stroke: var(--line-on-green); stroke-width: 6; stroke-linecap: square; stroke-linejoin: miter; }
+.plan .thin { fill: none; stroke: var(--line-on-green); stroke-width: 1.75; stroke-linecap: round; stroke-linejoin: round; }
+.plan .faint { fill: none; stroke: rgb(243 247 244 / .5); stroke-width: 1.5; stroke-dasharray: 4 7; stroke-linecap: round; }
+.plan .trail { fill: none; stroke: var(--action); stroke-width: 4; stroke-linecap: round; stroke-dasharray: .1 13; }
+.plan .route-mask { fill: none; stroke: #fff; stroke-width: 12; stroke-dasharray: 1; stroke-dashoffset: 1; }
+.plan .dot { fill: var(--action); offset-path: path("M20 530 C 90 530 160 520 190 462 C 205 420 240 330 330 330 C 390 330 420 350 450 376"); offset-distance: 0%; offset-rotate: 0deg; }
+.plan .ring { fill: none; stroke: var(--action); stroke-width: 2; opacity: 0; transform-box: fill-box; transform-origin: center; }
+
+@media (prefers-reduced-motion: no-preference) {
+  .plan .route-mask { animation: draw 2.8s var(--ease) .5s forwards; }
+  .plan .dot { animation: travel 2.8s var(--ease) .5s forwards; }
+  .plan .ring { animation: arrive 1.6s var(--ease) 3.1s 1 forwards; }
+  .hero-copy > * { animation: rise .9s var(--ease) both; }
+  .hero-copy > :nth-child(2) { animation-delay: .1s; }
+  .hero-copy > :nth-child(3) { animation-delay: .2s; }
+}
+@keyframes draw { to { stroke-dashoffset: 0; } }
+@keyframes travel { to { offset-distance: 100%; } }
+@keyframes arrive { 0% { opacity: .9; transform: scale(.4); } 100% { opacity: 0; transform: scale(2.6); } }
+@keyframes rise { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) {
+  .plan .route-mask { stroke-dashoffset: 0; }
+  .plan .dot { offset-distance: 100%; }
+}
+
+/* ---------- Seções de leitura ---------- */
+section { padding-block: clamp(4rem, 10vw, 8rem); }
+.problem h2 { max-width: 14ch; }
+.problem-grid { display: grid; grid-template-columns: minmax(0, 6fr) minmax(0, 5fr); gap: clamp(2rem, 6vw, 6rem); align-items: center; }
+.plan-lite { width: 100%; height: auto; color: var(--green-600); }
+.plan-lite .wall { fill: none; stroke: currentColor; stroke-width: 6; stroke-linecap: square; }
+.plan-lite .thin { fill: none; stroke: currentColor; stroke-width: 1.75; stroke-linecap: round; stroke-linejoin: round; }
+.plan-lite .trail { fill: none; stroke: currentColor; stroke-width: 4; stroke-linecap: round; stroke-dasharray: .1 13; }
+.plan-lite text { font: 500 15px/1 var(--font-body); letter-spacing: .08em; text-transform: uppercase; fill: var(--ink-soft); }
+.plan-lite .lost { font: 700 44px/1 var(--font-display); fill: var(--ink); letter-spacing: 0; text-transform: none; }
+.axis { list-style: none; margin: clamp(2.5rem, 6vw, 4.5rem) 0 0; padding: 0; max-width: 50rem; position: relative; }
+.axis li { position: relative; padding: 0 0 2.75rem 3.25rem; }
+.axis li:last-child { padding-bottom: 0; }
+.axis li::before { content: ""; position: absolute; left: 0; top: .45rem; width: 1.25rem; height: 1.25rem; border-radius: 50%; border: 2.5px solid var(--green-600); background: var(--paper); z-index: 1; }
+@media (prefers-color-scheme: dark) { .axis li::before { border-color: var(--action); } }
+.axis li::after { content: ""; position: absolute; left: calc(.625rem - 1px); top: 1.9rem; bottom: .25rem; width: 2px; background: radial-gradient(circle, var(--field-border) 1px, transparent 1.4px) 0 0 / 2px 10px repeat-y; }
+.axis li:last-child::after { display: none; }
+.axis h3 { margin-bottom: .35rem; }
+.axis p { color: var(--ink-soft); max-width: 44ch; }
+
+/* Paredes de planta: seções de leitura são separadas por um traço grosso, como parede cortada na planta. */
+.how, .scope { border-top: 6px solid var(--green-600); }
+@media (prefers-color-scheme: dark) { .how, .scope { border-top-color: var(--field-border); } }
+.how { background: var(--paper-2); }
+.how h2 { max-width: 18ch; }
+.route { position: relative; margin-top: clamp(3rem, 6vw, 5rem); display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); grid-template-rows: 9.5rem 3rem 9.5rem; column-gap: 2rem; }
+.rail { grid-row: 2; grid-column: 1 / -1; align-self: center; height: 4px; background: radial-gradient(circle, var(--green-600) 1.6px, transparent 2px) 0 50% / 12px 4px repeat-x; }
+@media (prefers-color-scheme: dark) { .rail { background-image: radial-gradient(circle, var(--field-border) 1.6px, transparent 2px); } }
+.route-dot { position: absolute; z-index: 2; left: 0; top: calc(9.5rem + 1.5rem - 10px); width: 20px; height: 20px; border-radius: 50%; background: var(--action); box-shadow: 0 0 0 4px rgb(242 196 109 / .35); }
+.stop { position: relative; }
+.s1 { grid-column: 1; } .s2 { grid-column: 2; } .s3 { grid-column: 3; }
+.stop.up { grid-row: 1; align-self: end; }
+.stop.down { grid-row: 3; align-self: start; }
+.stop::after { content: ""; position: absolute; left: 0; width: 1.25rem; height: 1.25rem; border-radius: 50%; border: 2.5px solid var(--green-600); background: var(--paper-2); z-index: 1; }
+@media (prefers-color-scheme: dark) { .stop::after { border-color: var(--action); } }
+.stop.up::after { bottom: calc(-1.5rem - .625rem); }
+.stop.down::after { top: calc(-1.5rem - .625rem); }
+.stop h3 { margin-bottom: .5rem; }
+.stop p { color: var(--ink-soft); max-width: 30ch; }
+.route-note { margin-top: 3.5rem; max-width: 48ch; color: var(--ink-soft); }
+.js .route.in .route-dot { animation: rail 3s var(--ease) forwards; }
+@keyframes rail { to { left: calc(100% - 20px); } }
+@keyframes rail-v { to { top: calc(100% - 20px); } }
+@media (prefers-reduced-motion: reduce) { .route-dot { left: calc(100% - 20px); } .js .route.in .route-dot { animation: none; } }
+
+.scope h2 { max-width: 16ch; }
+.scope-cols { margin-top: clamp(2.5rem, 5vw, 3.5rem); max-width: 36rem; }
+.scope ul { border-top: 2px solid var(--green-600); }
+@media (prefers-color-scheme: dark) { .scope ul { border-top-color: var(--action); } }
+.scope h3 { padding-bottom: .9rem; border-bottom: 2px solid var(--green-600); margin-bottom: .5rem; }
+@media (prefers-color-scheme: dark) { .scope h3 { border-color: var(--action); } }
+.scope ul { list-style: none; margin: 0; padding: 0; }
+.scope li { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: .85rem 0; font-size: 1.2rem; border-bottom: 1px solid var(--rule); min-height: 4.1rem; }
+.sym { width: 64px; height: 40px; flex: none; color: var(--green-600); fill: none; stroke: currentColor; stroke-width: 1.75; stroke-linecap: round; stroke-linejoin: round; }
+@media (prefers-color-scheme: dark) { .sym { color: var(--ink-soft); } .plan-lite { color: var(--ink-soft); } }
+.scope li:last-child { border-bottom: 0; }
+.scope .out li { color: var(--ink-soft); text-decoration: line-through; text-decoration-thickness: 1.5px; text-decoration-color: var(--field-border); }
+
+/* ---------- Fecho com formulário ---------- */
+.signup {
+  background-color: var(--green-700);
+  color: var(--on-green);
+  padding-block: clamp(4rem, 10vw, 7.5rem);
+}
+.signup-grid { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 6fr); gap: clamp(2rem, 6vw, 6rem); align-items: start; }
+.signup h2 { margin-bottom: 1.25rem; }
+.signup .lead { color: var(--on-green-soft); }
+.form { background: var(--paper); color: var(--ink); border-radius: var(--radius); padding: clamp(1.4rem, 3.5vw, 2.4rem); display: grid; gap: 1.35rem; box-shadow: 0 30px 60px -30px rgb(8 20 13 / .6); }
+.field { display: grid; gap: .45rem; }
+.field > label, .field > legend { font-weight: 600; font-size: 1rem; padding: 0; }
+.hint { font-size: .9rem; color: var(--ink-soft); }
+input[type=text] {
+  width: 100%; min-height: 3.2rem; padding: .7rem .95rem;
+  font: 400 1.0625rem/1.3 var(--font-body); color: var(--ink);
+  background: var(--paper); border: 1.5px solid var(--field-border); border-radius: 10px;
+  transition: border-color .2s, box-shadow .2s;
+}
+@media (prefers-color-scheme: dark) { input[type=text] { background: var(--paper-2); } }
+input[type=text]:hover { border-color: var(--green-600); }
+input[type=text]:focus-visible { outline: 3px solid var(--focus-light); outline-offset: 1px; }
+.field.invalid input[type=text] { border-color: #A8321F; box-shadow: 0 0 0 1px #A8321F; }
+@media (prefers-color-scheme: dark) { .field.invalid input[type=text] { border-color: #FF9C86; box-shadow: 0 0 0 1px #FF9C86; } }
+.error { color: #8E2616; font-size: .92rem; font-weight: 500; min-height: 0; }
+@media (prefers-color-scheme: dark) { .error { color: #FFAE9B; } }
+fieldset.field { border: 0; margin: 0; padding: 0; min-width: 0; }
+.choices { display: flex; gap: .75rem; }
+.choice { position: relative; flex: 1; }
+.choice input { position: absolute; opacity: 0; inset: 0; width: 100%; height: 100%; margin: 0; cursor: pointer; }
+.choice span { display: grid; place-items: center; min-height: 3.2rem; border: 1.5px solid var(--field-border); border-radius: 10px; font-weight: 600; background: var(--paper); transition: background-color .2s, color .2s, border-color .2s; }
+@media (prefers-color-scheme: dark) { .choice span { background: var(--paper-2); } }
+.choice:hover span { border-color: var(--green-600); }
+.choice input:checked + span { background: var(--green-600); border-color: var(--green-600); color: var(--on-green); }
+.choice input:focus-visible + span { outline: 3px solid var(--focus-light); outline-offset: 2px; }
+.field.invalid .choice span { border-color: #A8321F; }
+.form .btn { width: 100%; }
+.form :focus-visible { outline-color: var(--focus-light); }
+.privacy { font-size: .9rem; color: var(--ink-soft); line-height: 1.5; }
+.status { font-weight: 500; }
+.status:empty { display: none; }
+.status.ok { background: var(--green-600); color: var(--on-green); padding: 1rem 1.15rem; border-radius: 10px; }
+.status.fail { color: #8E2616; border: 1.5px solid #A8321F; padding: .9rem 1.1rem; border-radius: 10px; }
+@media (prefers-color-scheme: dark) { .status.fail { color: #FFAE9B; border-color: #FF9C86; } }
+.hp { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
+.form.done .field, .form.done .btn, .form.done .privacy { display: none; }
+
+/* ---------- Rodapé ---------- */
+footer { background: var(--green-800); color: var(--on-green); padding-block: 2.5rem; }
+footer .wrap { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 1.25rem 2rem; }
+footer .brand-mark { background: var(--green-600); }
+footer p { color: var(--on-green-soft); max-width: 46ch; font-size: .95rem; }
+
+/* ---------- Responsivo ---------- */
+@media (max-width: 860px) {
+  .hero { min-height: 0; }
+  .hero-body { grid-template-columns: 1fr; padding-top: 1.5rem; gap: 2.5rem; }
+  .hero .lead { margin-bottom: 1.75rem; }
+  .plan { max-width: 520px; margin-inline: auto; }
+  .nav .btn { display: none; }
+  .signup-grid { grid-template-columns: 1fr; }
+  .plan text { font-size: 24px; }
+  .problem-grid { grid-template-columns: 1fr; }
+  .plan-lite { max-width: 380px; }
+  .route { display: block; padding-left: 3rem; }
+  .rail { position: absolute; left: calc(.625rem - 2px); top: 0; bottom: 0; width: 4px; height: auto; background: radial-gradient(circle, var(--green-600) 1.6px, transparent 2px) 50% 0 / 4px 12px repeat-y; }
+  @media (prefers-color-scheme: dark) { .rail { background-image: radial-gradient(circle, var(--field-border) 1.6px, transparent 2px); } }
+  .route-dot { left: calc(.625rem - 10px); top: 0; }
+  .js .route.in .route-dot { animation-name: rail-v; }
+  .stop { padding-bottom: 2.75rem; }
+  .stop:last-of-type { padding-bottom: 0; }
+  .stop::after, .stop.up::after, .stop.down::after { left: -3rem; top: .3rem; bottom: auto; }
+}
+@media (max-width: 860px) and (prefers-reduced-motion: reduce) { .route-dot { left: calc(.625rem - 10px); top: calc(100% - 20px); } }
+@media (max-width: 480px) {
+  .btn { width: 100%; }
+  .choices { gap: .5rem; }
+}
+</style>
+</head>
+<body>
+<a class="skip" href="#lista">Ir para o formulário</a>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="casa" viewBox="0 0 32 32"><path d="M16 6.5 6.5 14.6v10.9h6.7v-6.9h5.6v6.9h6.7V14.6z" fill="#fff" stroke="#fff" stroke-width="1.4" stroke-linejoin="round"/></symbol>
+</svg>
+
+<header class="hero on-green">
+  <div class="wrap nav">
+    <a class="brand" href="#" aria-label="Movex, início">
+      <span class="brand-mark"><svg aria-hidden="true"><use href="#casa"/></svg></span>
+      Movex
+    </a>
+    <a class="btn" href="#lista">Quero acompanhar</a>
+  </div>
+
+  <div class="wrap hero-body">
+    <div class="hero-copy">
+      <h1>Saiba onde está o seu móvel.</h1>
+      <p class="lead">Movex é uma ideia de app para ligar você às lojas de móveis e acompanhar o pedido e a entrega. Ainda está no começo.</p>
+      <a class="btn" href="#lista">Quero acompanhar
+        <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 10h11M11 5l5 5-5 5"/></svg>
+      </a>
+    </div>
+
+    <svg class="plan" viewBox="0 0 640 560" role="img" aria-label="Planta de uma sala. Um trajeto pontilhado entra pela porta e chega ao sofá.">
+      <defs>
+        <mask id="reveal" maskUnits="userSpaceOnUse" x="0" y="0" width="640" height="560">
+          <path class="route-mask" pathLength="1" d="M20 530 C 90 530 160 520 190 462 C 205 420 240 330 330 330 C 390 330 420 350 450 376"/>
+        </mask>
+      </defs>
+      <!-- paredes, com vão para a janela (topo) e para a porta (base) -->
+      <path class="wall" d="M150 460 H90 V60 H330 M480 60 H560 V460 H230"/>
+      <!-- janela -->
+      <path class="thin" d="M330 56 H480 M330 64 H480 M405 56 V64"/>
+      <text x="355" y="42">janela</text>
+      <!-- porta e giro -->
+      <path class="thin" d="M150 460 V380 M150 380 A80 80 0 0 1 230 460"/>
+      <text x="246" y="486">porta</text>
+      <!-- rack -->
+      <rect class="thin" x="130" y="78" width="150" height="30" rx="3"/>
+      <text x="150" y="130">rack</text>
+      <!-- guarda-roupa -->
+      <rect class="thin" x="96" y="180" width="38" height="130" rx="3"/>
+      <path class="thin" d="M96 180 L134 310 M134 180 L96 310"/>
+      <!-- tapete -->
+      <rect class="faint" x="290" y="190" width="240" height="120" rx="8"/>
+      <!-- sofá -->
+      <rect class="thin" x="360" y="338" width="180" height="96" rx="14"/>
+      <rect class="thin" x="360" y="338" width="180" height="26" rx="12"/>
+      <path class="thin" d="M420 364 V434 M480 364 V434"/>
+      <text x="470" y="326">sofá</text>
+      <!-- trajeto -->
+      <path class="trail" mask="url(#reveal)" d="M20 530 C 90 530 160 520 190 462 C 205 420 240 330 330 330 C 390 330 420 350 450 376"/>
+      <text x="20" y="508">loja</text>
+      <circle class="ring" cx="450" cy="376" r="14"/>
+      <circle class="dot" cx="0" cy="0" r="9"/>
+    </svg>
+  </div>
+</header>
+
+<main>
+  <section class="problem">
+    <div class="wrap">
+      <div class="problem-grid">
+      <div>
+      <h2>Comprar é fácil. Esperar sem saber, não.</h2>
+      <ol class="axis">
+        <li>
+          <h3>Sem previsão</h3>
+          <p>Muita gente espera mais do que a loja prometeu, e ninguém diz quando o móvel vai chegar.</p>
+        </li>
+        <li>
+          <h3>Sem rastreio</h3>
+          <p>Depois de pagar, você não vê em que etapa está o seu pedido.</p>
+        </li>
+        <li>
+          <h3>Sem resposta</h3>
+          <p>Você pergunta para a loja e nem sempre recebe retorno.</p>
+        </li>
+      </ol>
+      </div>
+
+      <svg class="plan-lite" viewBox="0 0 420 400" role="img" aria-label="Planta de uma sala. O trajeto pontilhado entra pela porta e se perde antes de chegar ao sofá.">
+        <path class="wall" d="M110 340 H30 V30 H390 V340 H190"/>
+        <path class="thin" d="M110 340 V270 M110 270 A70 70 0 0 1 180 340"/>
+        <rect class="thin" x="250" y="210" width="120" height="84" rx="12"/>
+        <rect class="thin" x="250" y="210" width="120" height="22" rx="10"/>
+        <path class="thin" d="M290 232 V294 M330 232 V294"/>
+        <path class="trail" d="M10 382 C 70 382 110 368 134 336 C 146 318 156 296 176 268"/>
+        <text x="10" y="364">loja</text>
+        <text x="262" y="196">sofá</text>
+        <text class="lost" x="190" y="246">?</text>
+      </svg>
+      </div>
+    </div>
+  </section>
+
+  <section class="how">
+    <div class="wrap">
+      <h2>A ideia: pedido e entrega no mesmo lugar.</h2>
+      <div class="route" id="route">
+        <span class="rail" aria-hidden="true"></span>
+        <span class="route-dot" aria-hidden="true"></span>
+
+        <div class="stop s1 up">
+          <h3>Você faz o pedido</h3>
+          <p>Ele vai para uma loja de móveis. Quem vende e emite a nota é a loja. O Movex não compra nem revende móveis.</p>
+        </div>
+
+        <div class="stop s2 down">
+          <h3>A loja entrega</h3>
+          <p>A entrega é feita por entregadores parceiros ou pela própria loja.</p>
+        </div>
+
+        <div class="stop s3 up">
+          <h3>Você acompanha</h3>
+          <p>Pedido e entrega aparecem no app, em vez de você ficar perguntando.</p>
+        </div>
+      </div>
+      <p class="route-note">Isto é o plano. Nada disso foi construído ainda.</p>
+    </div>
+  </section>
+
+  <section class="scope">
+    <div class="wrap">
+      <h2>Para móvel novo e de linha.</h2>
+      <div class="scope-cols">
+        <div class="in">
+          <ul>
+            <li>Sofá
+              <svg class="sym" viewBox="0 0 64 40" aria-hidden="true"><rect x="6" y="8" width="52" height="28" rx="6"/><rect x="6" y="8" width="52" height="9" rx="4"/><path d="M23 17v19M41 17v19"/></svg>
+            </li>
+            <li>Rack
+              <svg class="sym" viewBox="0 0 64 40" aria-hidden="true"><rect x="4" y="12" width="56" height="16" rx="2"/><path d="M32 12v16"/></svg>
+            </li>
+            <li>Guarda-roupa de catálogo
+              <svg class="sym" viewBox="0 0 64 40" aria-hidden="true"><rect x="18" y="4" width="28" height="32" rx="2"/><path d="M18 4l28 32M46 4 18 36"/></svg>
+            </li>
+            <li>Cama
+              <svg class="sym" viewBox="0 0 64 40" aria-hidden="true"><rect x="6" y="5" width="52" height="30" rx="4"/><rect x="11" y="10" width="19" height="9" rx="3"/><rect x="34" y="10" width="19" height="9" rx="3"/><path d="M6 24h52"/></svg>
+            </li>
+            <li><span aria-label="e outros">…</span></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="signup on-green" id="lista">
+    <div class="wrap signup-grid">
+      <div>
+        <h2>Ainda é uma ideia. Seu contato ajuda a decidir por onde começar.</h2>
+        <p class="lead">Cidades atendidas, prazo, preço, lojas, forma de pagamento e montagem ainda não estão definidos.</p>
+      </div>
+
+      <form class="form" id="form" novalidate>
+        <div class="field" data-field="nome">
+          <label for="nome">Nome</label>
+          <input type="text" id="nome" name="nome" autocomplete="name" required aria-describedby="nome-erro">
+          <p class="error" id="nome-erro" role="alert"></p>
+        </div>
+
+        <div class="field" data-field="contato">
+          <label for="contato">E-mail ou WhatsApp</label>
+          <input type="text" id="contato" name="contato" inputmode="text" autocomplete="email" required aria-describedby="contato-dica contato-erro">
+          <p class="hint" id="contato-dica">Pode ser um ou outro. Com WhatsApp, inclua o DDD.</p>
+          <p class="error" id="contato-erro" role="alert"></p>
+        </div>
+
+        <div class="field" data-field="cidade">
+          <label for="cidade">Cidade</label>
+          <input type="text" id="cidade" name="cidade" autocomplete="address-level2" required aria-describedby="cidade-erro">
+          <p class="error" id="cidade-erro" role="alert"></p>
+        </div>
+
+        <fieldset class="field" data-field="comprou" aria-describedby="comprou-erro">
+          <legend>Comprou móvel no último ano?</legend>
+          <div class="choices">
+            <label class="choice"><input type="radio" name="comprou" value="Sim" required><span>Sim</span></label>
+            <label class="choice"><input type="radio" name="comprou" value="Não"><span>Não</span></label>
+          </div>
+          <p class="error" id="comprou-erro" role="alert"></p>
+        </fieldset>
+
+        <div class="hp" aria-hidden="true"><label>Não preencha <input type="text" name="site" tabindex="-1" autocomplete="off"></label></div>
+
+        <button class="btn" type="submit" id="enviar">Quero acompanhar</button>
+        <p class="privacy">Vamos usar seu contato só para falar com você sobre o Movex: novidades e, se você topar, uma conversa rápida sobre sua experiência comprando móvel. Os dados ficam em uma planilha privada.</p>
+        <p class="status" id="status" role="status" aria-live="polite"></p>
+      </form>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <a class="brand" href="#" aria-label="Movex, voltar ao topo">
+      <span class="brand-mark"><svg aria-hidden="true"><use href="#casa"/></svg></span>
+      Movex
+    </a>
+    <p>Movex é uma ideia em fase inicial. Quem vende e emite a nota é sempre a loja.</p>
+  </div>
+</footer>
+
+<script>
+(function () {
+  // Cole aqui a URL do Apps Script publicado (veja passo-a-passo-planilha.md).
+  var ENDPOINT = "https://script.google.com/macros/s/AKfycbzgl1n9XwXQnLD00_Xn8v54E0omzzVo4tv3eiAQxXORmAPFZoeTyvv_WvTWwyxeZdmD/exec";
+
+  document.documentElement.classList.add("js");
+
+  // O pontinho percorre a trilha quando ela entra na tela.
+  var route = document.getElementById("route");
+  if ("IntersectionObserver" in window) {
+    new IntersectionObserver(function (entries, obs) {
+      entries.forEach(function (e) { if (e.isIntersecting) { e.target.classList.add("in"); obs.unobserve(e.target); } });
+    }, { threshold: 0.4 }).observe(route);
+  } else { route.classList.add("in"); }
+
+  var form = document.getElementById("form");
+  var statusEl = document.getElementById("status");
+  var btn = document.getElementById("enviar");
+
+  var rules = {
+    nome: function (v) { return v.trim().length >= 2 ? "" : "Escreva seu nome."; },
+    contato: function (v) {
+      v = v.trim();
+      if (!v) return "Escreva um e-mail ou WhatsApp.";
+      var email = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v);
+      var digits = v.replace(/\D/g, "");
+      var fone = /^[\d\s()+\-.]+$/.test(v) && digits.length >= 10 && digits.length <= 13;
+      return email || fone ? "" : "Use um e-mail válido ou um WhatsApp com DDD.";
+    },
+    cidade: function (v) { return v.trim().length >= 2 ? "" : "Escreva a sua cidade."; },
+    comprou: function () { return form.elements.comprou.value ? "" : "Escolha Sim ou Não."; }
+  };
+
+  function show(name, msg) {
+    var field = form.querySelector('[data-field="' + name + '"]');
+    field.classList.toggle("invalid", !!msg);
+    document.getElementById(name + "-erro").textContent = msg;
+    var input = field.querySelector("input");
+    if (input && input.type === "text") input.setAttribute("aria-invalid", msg ? "true" : "false");
+  }
+  function check(name) {
+    var el = form.elements[name];
+    var msg = rules[name](name === "comprou" ? "" : el.value);
+    show(name, msg);
+    return msg;
+  }
+  Object.keys(rules).forEach(function (name) {
+    var el = form.elements[name];
+    if (name === "comprou") {
+      Array.prototype.forEach.call(el, function (r) { r.addEventListener("change", function () { check(name); }); });
+    } else {
+      el.addEventListener("blur", function () { if (el.value) check(name); });
+      el.addEventListener("input", function () { if (el.closest(".invalid")) check(name); });
+    }
+  });
+
+  function setStatus(kind, text) {
+    statusEl.className = "status" + (kind ? " " + kind : "");
+    statusEl.textContent = text;
+  }
+
+  form.addEventListener("submit", function (ev) {
+    ev.preventDefault();
+    setStatus("", "");
+    var first = null;
+    Object.keys(rules).forEach(function (name) {
+      if (check(name) && !first) first = name;
+    });
+    if (first) {
+      var target = first === "comprou" ? form.querySelector('input[name="comprou"]') : form.elements[first];
+      target.focus();
+      return;
+    }
+    if (form.elements.site.value) { setStatus("ok", "Pronto, recebemos seu contato."); form.classList.add("done"); return; }
+
+    if (ENDPOINT.indexOf("http") !== 0) {
+      setStatus("fail", "O formulário ainda não está conectado à planilha. Avise quem publicou a página.");
+      return;
+    }
+
+    var data = new URLSearchParams();
+    data.set("nome", form.elements.nome.value.trim());
+    data.set("contato", form.elements.contato.value.trim());
+    data.set("cidade", form.elements.cidade.value.trim());
+    data.set("comprou", form.elements.comprou.value);
+
+    btn.disabled = true;
+    btn.textContent = "Enviando...";
+    fetch(ENDPOINT, { method: "POST", mode: "no-cors", body: data })
+      .then(function () {
+        form.classList.add("done");
+        setStatus("ok", "Pronto, recebemos seu contato. Avisamos quando houver novidade.");
+      })
+      .catch(function () {
+        btn.disabled = false;
+        btn.textContent = "Quero acompanhar";
+        setStatus("fail", "Não conseguimos enviar agora. Confira a conexão e tente de novo.");
+      });
+  });
+})();
+</script>
+</body>
+</html>
