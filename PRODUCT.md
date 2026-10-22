@@ -34,7 +34,7 @@ Nome: Movex. Cor principal: verde escuro pastel. Logo: casinha branca sobre fund
 Nenhuma. Sem clientes, lojas parceiras, depoimentos, avaliações, prêmios, números ou funcionalidades construídas. Nada disso pode aparecer na página.
 
 ## Product Principles
-1. Honestidade sobre o estágio: é uma ideia em validação, a página pede interesse, não vende produto pronto.
+1. Honestidade sobre o estágio: é um app em fase inicial de desenvolvimento, a página pede interesse, não vende produto pronto. Não chamar de "ideia" na página.
 2. O problema é a incerteza pós-compra (sem previsão, sem rastreio, sem resposta), não a compra em si.
 3. Nada de números, prazos, lojas, depoimentos ou funcionalidades inventadas.
 4. Pedir o mínimo de dados e dizer para que serão usados.
